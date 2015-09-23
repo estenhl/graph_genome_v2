@@ -1,7 +1,7 @@
 HEAD_VALUE = 'Head'
 TAIL_VALUE = 'Tail'
 HEAD_INDEX = 0
-TAIL_INDEX = -1
+TAIL_INDEX = float('inf')
 REFERENCE_PATH_INDEX = 'REF'
 INDEL = '-'
 
@@ -250,6 +250,11 @@ class Graph:
 
 		return size == len(self.paths)
 
+	def find_critical_regions(self):
+		critical = []
+
+		return sorted(self.head.find_critical(len(self.paths), critical))
+
 class Node:
 	def __init__(self, value, index):
 		self.value = value
@@ -305,15 +310,7 @@ class Node:
 
 			return {'node': False, 'length': float('inf')}
 
-	def is_critical(self, index):
-		if (self.index == index):
-			return True
-		elif (self.index == TAIL_INDEX):
-			return False
 
-		for neighbour in self.get_neighbours():
-			if not neighbour.is_critical(index):
-				return False
 
 		return True
 
@@ -330,6 +327,26 @@ class Node:
 				return True
 
 		return False
+
+	def find_critical(self, paths, critical):
+		self.visited = True
+
+		out = 0
+		for neighbour in self.neighbours:
+			out += len(neighbour.paths)
+
+		inc = 0
+		for incoming in self.incoming:
+			inc += len(incoming.paths)
+
+		if out == paths or inc == paths:
+			critical.append(self.index)
+
+		for neighbour in self.neighbours:
+			if not (hasattr(neighbour.dest, 'visited') and neighbour.dest.visited):
+				neighbour.dest.find_critical(paths, critical)
+
+		return critical
 
 class Edge:
 	def __init__(self, src, dest, path):
