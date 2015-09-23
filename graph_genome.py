@@ -14,12 +14,22 @@ def command_loop(graph):
 				continue
 
 			parse_VCF_variants(graph, cmd[1])
-		elif (cmd[0] == 'print'):
+		elif (cmd[0] == 'dot'):
 			if (len(cmd) < 2):
-				print('print needs an argument')
+				print('dot needs an argument')
 				continue
 
 			graph.print_DOT_representation(cmd[1])
+		elif (cmd[0] == 'print'):
+			print(graph.get_reference_genome_representation())
+		elif (cmd[0] == 'align'):
+			if (len(cmd) < 2):
+				print('align needs an argument')
+				continue
+
+			name, alignment1, alignment2 = split_alignment(cmd[1])
+			alignment = generate_graph_from_alignment(alignment2, name, graph)
+			graph.insert_global_alignment(alignment1, alignment, name)
 		elif (cmd[0] == 'analyze'):
 			if (len(cmd) < 3):
 				print('analyze needs two arguments')
@@ -46,14 +56,17 @@ def command_loop(graph):
 					print('All paths must go through ' + str(index2) + ' but not ' + str(index1))
 				else:
 					print('There exists paths which does not go through either ' + str(index1) + ' or ' + str(index2))
+		elif (cmd[0] == 'q' or cmd[0] == 'quit'):
+			exit()
 		else:
-			break
+			print(cmd[0] + ' is an invalid command')
 
 def print_help():
 	print('Available commands:')
 	print('help\t\t\t\tPrints help menu')
 	print('add <file>\t\t\tAdds VCF variants from file to graph')
-	print('print <file>\t\t\tPrints dot representation to file')
+	print('print\t\t\t\tPrints the reference genome the graph is based on')
+	print('dot <file>\t\t\tPrints dot representation to file')
 	print('analyze <index1> <index2>\tFind the distance between two nodes with given indexes')
 
 if __name__ == '__main__':

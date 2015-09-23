@@ -57,6 +57,9 @@ def split_VCF(lines):
 	return headers, data
 
 def parse_VCF_variant(graph, line):
+	if (line[0] == '#'):
+		return
+
 	tokens = re.split(r'\s+', line)
 	index = int(tokens[1])
 	path = tokens[2]
@@ -104,3 +107,25 @@ def get_variant_type(original, value):
 			return VARIANT_TYPE_COMPLEX
 	else:
 		return VARIANT_TYPE_OTHER
+
+def split_alignment(filename):
+	lines = open(filename, 'r').readlines()
+	return filename, lines[0].strip(), lines[1].strip()
+
+def generate_graph_from_alignment(alignment, name, graph):
+	path = []
+
+	prev = None
+	for i in range(0, len(alignment)):
+		if (alignment[i] == '-'):
+			path.append(None)
+		else:
+			curr = Node(alignment[i], graph.current_index)
+			graph.current_index += 1
+			if (prev):
+				prev.add_neighbour(curr, name)
+			prev = curr
+			path.append(prev)
+
+	return path
+
