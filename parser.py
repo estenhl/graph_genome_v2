@@ -124,13 +124,15 @@ def parse_global_alignment(filename):
 	alignment1 = ''
 	alignment2 = ''
 	start = True
+	print('Pairs:' + str(pairs))
 	for pair in pairs:
-		print(pair)
 		alignment1 += pair[0]
 		if not pair[1]:
+			print("NO PAIR")
 			for i in range(0, len(pair[0])):
 				alignment2 += '-'
 		elif len(pair[0]) > len(pair[1]):
+			print("SHITS LONGER YOU")
 			if start:
 				for i in range(0, len(pair[0]) - len(pair[1])):
 					alignment2 += '-'
@@ -141,6 +143,7 @@ def parse_global_alignment(filename):
 				for i in range(0, len(pair[0]) - len(pair[1])):
 					alignment2 += '-'
 		else:
+			print("NADA")
 			alignment2 += pair[1]
 			start = False
 

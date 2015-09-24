@@ -186,12 +186,13 @@ class Graph:
 								edge.paths.append(names)
 					prev.neighbours.remove(prev.get_edge(new_path[i]))
 				else:
-					new_prev.neighbours.append(Edge(new_prev, path[i], name))
+					new_prev.add_neighbour(path[i], name)
 					old_edge = new_prev.get_edge(new_path[i])
 					if (old_edge):
 						new_prev.neighbours.remove(old_edge)
 				for neighbour in new_path[i].neighbours:
 					path[i].neighbours.append(neighbour)
+					neighbour.dest.incoming.append(neighbour)
 
 				new_prev = prev = path[i]
 				continue
@@ -357,7 +358,7 @@ class DOTPrinter:
 	def __init__(self, paths):
 		self.vertices = {}
 		self.edges = []
-		self.colours = {'black': '000000', 'red':'FF0000', 'blue':'0000FF', 'green':'00FF00', 'yellow':'FFFF00', 'chocolate':'D2691E', 'crimson':'DC143C', 'cyan':'00FFFF', 'deep pink':'FF1493', 'indigo':'4B0082'}
+		self.colours = {'black': '000000', 'red':'FF0000', 'blue':'ADD8E6', 'green':'7CFC00', 'yellow':'FFFF00', 'chocolate':'D2691E', 'crimson':'DC143C', 'cyan':'00FFFF', 'deep pink':'FF1493', 'indigo':'4B0082'}
 	
 		self.colour_scheme = {}
 		if (len(paths) > len(self.colours)):
@@ -422,4 +423,7 @@ def merge_colours(colours):
 		val = int(val / len(colours))
 		sum += val
 
-	return str(hex(sum))[2:]
+	sum = str(sum)
+	while len(sum) < 6:
+		sum = '0' + sum
+	return sum

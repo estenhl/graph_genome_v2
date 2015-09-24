@@ -9,6 +9,11 @@ def command_loop():
 	while (True):
 		cmd = input('Command ("help" for help):').split(" ")
 		if (cmd[0] == 'build'):
+			if graph:
+				print('Graph already built')
+				confirm = input('Overwrite (y/n): ')
+				if confirm != 'y':
+					continue
 			if (len(cmd) < 2):
 				print('build needs an argument')
 				continue
@@ -48,6 +53,8 @@ def command_loop():
 				except FileNotFoundError:
 					print(cmd[1] + ' is not a file')
 					continue
+				print(alignment1)
+				print(alignment2)
 				alignment = generate_graph_from_alignment(alignment2, name, graph)
 				graph.insert_global_alignment(alignment1, alignment, name)
 			elif (cmd[0] == 'critical'):
