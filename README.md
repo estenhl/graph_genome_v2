@@ -3,9 +3,9 @@ A graph-based reference genome
 ## Commands
 - build \<filename\>
   Builds a graph from a single reference genome. Has to be run first. See data/test.fasta for format
-- add-vcf <filename>\n
+- add-vcf <filename>  
   Adds variants from a vcf-file. See data/test.vcf for format
-- add-global-alignment
+- add-global-alignment<br />
   Adds a new path from a global alignment, see data/alignment.txt for format
 - dot <filename>
   Prints the graph to a file compatible in the dot-format to be opened with dotty or similar
