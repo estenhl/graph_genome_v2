@@ -1,0 +1,66 @@
+Query  1     ATGCGGGTCACGGCGCCCCGAACCCTCCTCCTGCTGCTCTGGGGGGCAGTGGCCCTGACC  60
+                                                                         
+
+Query  61    GAGACCTGGGCTGGCTCCCACTCCATGAGGTATTTCCACACCTCCGTGTCCCGGCCCGGC  120
+                          |||||||||||||||||||||||||||||||||||||||||||||||
+Sbjct  1                  GCTCCCACTCCATGAGGTATTTCCACACCTCCGTGTCCCGGCCCGGC  47
+
+Query  121   CGCGGGGAGCCCCGCTTCATCACCGTGGGCTACGTGGACGACACGCTGTTCGTGAGGTTC  180
+             ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+Sbjct  48    CGCGGGGAGCCCCGCTTCATCACCGTGGGCTACGTGGACGACACGCTGTTCGTGAGGTTC  107
+
+Query  181   GACAGCGACGCCGCGAGTCCGAGAGAGGAGCCGCGGGCGCCGTGGATAGAGCAGGAGGGG  240
+             ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+Sbjct  108   GACAGCGACGCCGCGAGTCCGAGAGAGGAGCCGCGGGCGCCGTGGATAGAGCAGGAGGGG  167
+
+Query  241   CCGGAGTATTGGGACCGGGAGACACAGATCTGCAAGGCCAAGGCACAGACTGACCGAGAG  300
+             ||||||||||||||||||||||||||||||||||||||||||||||||||| ||||||||
+Sbjct  168   CCGGAGTATTGGGACCGGGAGACACAGATCTGCAAGGCCAAGGCACAGACTTACCGAGAG  227
+
+Query  301   GACCTGCGGACCCTGCTCCGCTACTACAACCAGAGCGAGGCCGGGTCTCACACCCTCCAG  360
+              ||||||| |||  ||||||||||||||||||||||||||||||||||||||||||||||
+Sbjct  228   AACCTGCGCACCGCGCTCCGCTACTACAACCAGAGCGAGGCCGGGTCTCACACCCTCCAG  287
+
+Query  361   AATATGTATGGCTGCGACGTGGGGCCGGACGGGCGCCTCCTCCGCGGGTACCACCAGGAC  420
+             ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+Sbjct  288   AATATGTATGGCTGCGACGTGGGGCCGGACGGGCGCCTCCTCCGCGGGTACCACCAGGAC  347
+
+Query  421   GCCTACGACGGCAAGGATTACATCGCCCTGAACGAGGACCTGAGCTCCTGGACCGCCGCG  480
+             ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+Sbjct  348   GCCTACGACGGCAAGGATTACATCGCCCTGAACGAGGACCTGAGCTCCTGGACCGCCGCG  407
+
+Query  481   GACACGGCGGCTCAGATCACCCAGCGCAAGTGGGAGGCGGCCCGTGTGGCGGAGCAGCTG  540
+             ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+Sbjct  408   GACACGGCGGCTCAGATCACCCAGCGCAAGTGGGAGGCGGCCCGTGTGGCGGAGCAGCTG  467
+
+Query  541   AGAGCCTACCTGGAGGGCGAGTGCGTGGAGTGGCTCCGCAGATACCTGGAGAACGGGAAG  600
+             ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+Sbjct  468   AGAGCCTACCTGGAGGGCGAGTGCGTGGAGTGGCTCCGCAGATACCTGGAGAACGGGAAG  527
+
+Query  601   GAGACGCTGCAGCGCGCGGACCCCCCAAAGACACACGTGACCCACCACCCCATCTCTGAC  660
+             |||||||||||||||||||                                         
+Sbjct  528   GAGACGCTGCAGCGCGCGG                                           546
+
+Query  661   CATGAGGCCACCCTGAGGTGCTGGGCCCTGGGCTTCTACCCTGCGGAGATCACACTGACC  720
+                                                                         
+
+Query  721   TGGCAGCGGGATGGCGAGGACCAAACTCAGGACACTGAGCTTGTGGAGACCAGACCAGCA  780
+                                                                         
+
+Query  781   GGAGATAGAACCTTCCAGAAGTGGGCAGCTGTGGTGGTGCCTTCTGGAGAAGAGCAGAGA  840
+                                                                         
+
+Query  841   TACACATGCCATGTACAGCATGAGGGGCTGCCGAAGCCCCTCACCCTGAGATGGGAGCCG  900
+                                                                         
+
+Query  901   TCTTCCCAGTCCACCGTCCCCATCGTGGGCATTGTTGCTGGCCTGGCTGTCCTAGCAGTT  960
+                                                                         
+
+Query  961   GTGGTCATCGGAGCTGTGGTCGCTGCTGTGATGTGTAGGAGGAAGAGCTCAGGTGGAAAA  1020
+                                                                         
+
+Query  1021  GGAGGGAGCTACTCTCAGGCTGCGTCAGCGACAGTGCCCAGGGCTCTGATGTGTCTCTCA  1080
+                                                                         
+
+Query  1081  CAGCTTGA  1088
+                     

@@ -108,9 +108,10 @@ def get_variant_type(original, value):
 	else:
 		return VARIANT_TYPE_OTHER
 
-def split_alignment(filename):
+def parse_global_alignment(filename):
 	lines = open(filename, 'r').readlines()
-	return filename, lines[0].strip(), lines[1].strip()
+	alignment1 = ''
+	alignment2 = ''
 
 def generate_graph_from_alignment(alignment, name, graph):
 	path = []
@@ -128,4 +129,3 @@ def generate_graph_from_alignment(alignment, name, graph):
 			path.append(prev)
 
 	return path
-

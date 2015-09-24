@@ -13,7 +13,10 @@ def command_loop():
 				print('build needs an argument')
 				continue
 
-			graph = parse_reference_genome(cmd[1])
+			try:
+				graph = parse_reference_genome(cmd[1])
+			except FileNotFoundError:
+				print(cmd[1] + ' is not a file')
 		elif not (cmd[0] == 'q' or cmd[0] == 'quit'):
 			if not graph:
 				print('Execute ">build <filename>" first to build a graph')
@@ -24,8 +27,10 @@ def command_loop():
 				if (len(cmd) < 2):
 					print('add needs an argument')
 					continue
-
-				parse_VCF_variants(graph, cmd[1])
+				try:
+					parse_VCF_variants(graph, cmd[1])
+				except FileNotFoundError:
+					print(cmd[1] + ' is not a file')
 			elif (cmd[0] == 'dot'):
 				if (len(cmd) < 2):
 					print('dot needs an argument')
@@ -34,12 +39,15 @@ def command_loop():
 				graph.print_DOT_representation(cmd[1])
 			elif (cmd[0] == 'print'):
 				print(graph.get_reference_genome_representation())
-			elif (cmd[0] == 'add-alignment'):
+			elif (cmd[0] == 'add-global-alignment'):
 				if (len(cmd) < 2):
-					print('align needs an argument')
+					print('add-global-alignment needs an argument')
 					continue
-
-				name, alignment1, alignment2 = split_alignment(cmd[1])
+				try:
+					name, alignment1, alignment2 = parse_global_alignment(cmd[1])
+				except FileNotFoundError:
+					print(cmd[1] + ' is not a file')
+					continue
 				alignment = generate_graph_from_alignment(alignment2, name, graph)
 				graph.insert_global_alignment(alignment1, alignment, name)
 			elif (cmd[0] == 'critical'):
