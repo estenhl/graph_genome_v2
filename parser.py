@@ -110,8 +110,41 @@ def get_variant_type(original, value):
 
 def parse_global_alignment(filename):
 	lines = open(filename, 'r').readlines()
+	pairs = []
+
+	i = 2
+	while (i < len(lines)):
+		if (len(lines[i].split()) == 0):
+			pairs.append([lines[i - 2].split()[2], None])
+			i += 3
+		else:
+			pairs.append([lines[i - 2].split()[2], lines[i].split()[2]])
+			i += 4
+
 	alignment1 = ''
 	alignment2 = ''
+	start = True
+	for pair in pairs:
+		print(pair)
+		alignment1 += pair[0]
+		if not pair[1]:
+			for i in range(0, len(pair[0])):
+				alignment2 += '-'
+		elif len(pair[0]) > len(pair[1]):
+			if start:
+				for i in range(0, len(pair[0]) - len(pair[1])):
+					alignment2 += '-'
+				alignment2 += pair[1]
+				start = False
+			else:
+				alignment2 += pair[1]
+				for i in range(0, len(pair[0]) - len(pair[1])):
+					alignment2 += '-'
+		else:
+			alignment2 += pair[0]
+			start = False
+
+	return filename, alignment1, alignment2
 
 def generate_graph_from_alignment(alignment, name, graph):
 	path = []
