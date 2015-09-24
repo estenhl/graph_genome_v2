@@ -166,8 +166,7 @@ class Graph:
 			if (new_path[i]):
 				new_path[i].add_neighbour(self.tail, name)
 				break
-
-		print('Head neighbours: ' + str(len(self.head.neighbours)))
+		self.paths.append(name)
 		prev = self.head
 		new_prev = self.head
 		for i in range(0, len(path)):
@@ -239,7 +238,7 @@ class Graph:
 		return source.recursive_search(end)['length']
 
 	def print_DOT_representation(self, filename):
-		printer = DOTPrinter()
+		printer = DOTPrinter(self.paths)
 		printer.search(self.head)
 		printer.write(filename)
 
@@ -355,14 +354,26 @@ class Edge:
 		self.paths = [path]
 
 class DOTPrinter:
-	def __init__(self):
+	def __init__(self, paths):
 		self.vertices = {}
 		self.edges = []
+		self.colours = {'black': '000000', 'red':'FF0000', 'blue':'0000FF', 'green':'00FF00', 'yellow':'FFFF00', 'chocolate':'D2691E', 'crimson':'DC143C', 'cyan':'00FFFF', 'deep pink':'FF1493', 'indigo':'4B0082'}
+	
+		self.colour_scheme = {}
+		if (len(paths) > len(self.colours)):
+			print('Unable to handle this many paths')
+			for path in paths:
+				self.colour_scheme[path] = colours['black']
+		else:
+			for i in range(0, len(paths)):
+				self.colour_scheme[paths[i]] = list(self.colours.values())[i]
+
+		print('Colours: ' + str(self.colour_scheme))
 
 	def search(self, head):
 		self.vertices = {}
 		self.edges = []
-		self.vertices[HEAD_INDEX] = HEAD_VALUE
+		self.vertices[HEAD_INDEX] = {'value': HEAD_VALUE, 'paths': [REFERENCE_PATH_INDEX]}
 
 		queue = [head]
 		while (len(queue) > 0):
@@ -370,9 +381,13 @@ class DOTPrinter:
 			neighbours = curr.neighbours
 			for neighbour in neighbours:
 				if not (neighbour.dest.index in self.vertices.keys()):
-					self.vertices[neighbour.dest.index] = str(neighbour.dest.value)
+					paths = []
+					for incoming in neighbour.dest.incoming:
+						for path in incoming.paths:
+							paths.append(path)
+					self.vertices[neighbour.dest.index] = {'value':str(neighbour.dest.value), 'paths':paths}
 					queue.append(neighbour.dest)
-				self.edges.append([curr.index, neighbour.dest.index, str(neighbour.paths)])
+				self.edges.append({'src':curr.index, 'dest':neighbour.dest.index, 'paths':neighbour.paths})
 
 	def write(self, filename):
 		file = open(filename, 'w')
@@ -381,11 +396,30 @@ class DOTPrinter:
 
 		file.write('\t// Vertices\n')
 		for key in self.vertices.keys():
-			file.write('\t' + str(key) + ' [label="' + self.vertices[key] + '", xlabel="' + str(key) + '"];\n')
+			colours = []
+			for path in self.vertices[key]['paths']:
+				colours.append(self.colour_scheme[path])
+			colour = merge_colours(colours)
+			file.write('\t' + str(key) + ' [label="' + self.vertices[key]['value'] + '", xlabel="' + str(key) + '", color="#' + colour + '"];\n')
 
 		file.write('\n\t//Edges\n')
 		for edge in self.edges:
-			file.write('\t' + str(edge[0]) + ' -> ' + str(edge[1]) + ' [label="' + edge[2] +'"];\n')
+			colours = []
+			for path in edge['paths']:
+				colours.append(self.colour_scheme[path])
+
+			colour = merge_colours(colours)
+			file.write('\t' + str(edge['src']) + ' -> ' + str(edge['dest']) + ' [color="#' + str(colour) + '"];\n')
 
 		file.write('}')
 		file.close()
+
+def merge_colours(colours):
+	sum = 0
+
+	for colour in colours:
+		val = int(colour, 16)
+		val = int(val / len(colours))
+		sum += val
+
+	return str(hex(sum))[2:]

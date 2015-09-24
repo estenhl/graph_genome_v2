@@ -141,9 +141,12 @@ def parse_global_alignment(filename):
 				for i in range(0, len(pair[0]) - len(pair[1])):
 					alignment2 += '-'
 		else:
-			alignment2 += pair[0]
+			alignment2 += pair[1]
 			start = False
 
+	name = filename
+	if (len(name.split('/')) > 1):
+		name = name.split('/')[-1]
 	return filename, alignment1, alignment2
 
 def generate_graph_from_alignment(alignment, name, graph):
