@@ -53,21 +53,35 @@ def command_loop():
 				except FileNotFoundError:
 					print(cmd[1] + ' is not a file')
 					continue
-				print(alignment1)
-				print(alignment2)
+
 				alignment = generate_graph_from_alignment(alignment2, name, graph)
 				graph.insert_global_alignment(alignment1, alignment, name)
+			elif (cmd[0] == 'add-global-alignments'):
+				if (len(cmd) < 2):
+					print('add-global-alignments needs an argument')
+					continue
+
+				for i in range(2, len(cmd)):
+					try:
+						name, alignment1, alignment2 = parse_global_alignment(cmd[i])
+					except FileNotFoundError:
+						print(cmd[i] + ' is not a file')
+						continue
+
+					alignment = generate_graph_from_alignment(alignment2, name, graph)
+					graph.insert_global_alignment(alignment1, alignment, name)
+
 			elif (cmd[0] == 'critical'):
-				sorted = graph.find_critical_regions()
-				print('sorted: ' + str(sorted))
+				critical = graph.find_critical_regions()
+				print('sorted: ' + str(critical))
 				regions = []
 
 				i = 0
-				while i < len(sorted):
-					start = sorted[i]
-					while (i + 1 < len(sorted) and sorted[i + 1] == sorted[i] + 1):
+				while i < len(critical):
+					start = critical[i]
+					while (i + 1 < len(critical) and critical[i + 1] == critical[i] + 1):
 						i += 1
-					end = sorted[i]
+					end = critical[i]
 					if start != end:
 						regions.append(str(start) + '-' + str(end))
 					else:
@@ -75,6 +89,29 @@ def command_loop():
 					i += 1
 
 				print('Critical regions: ' + str(regions[:-1]))
+
+			elif (cmd[0] == 'index'):
+				critical = graph.find_critical_regions()
+				print(critical)
+				breakpoints = []
+
+				i = 0
+				while (i < len(critical)):
+					breakpoints.append(critical[i])
+					iterated = False
+					while (i + 1 < len(critical) and (critical[i] == critical[i + 1] - 1)):
+						i += 1
+						iterated = True
+					if iterated:
+						breakpoints.append(critical[i])
+					i += 1
+
+				print(breakpoints)
+
+				for i in range(1, len(breakpoints)):
+					regions.append(Region(graph.get_node_by_index(breakpoints[i - 1], graph.get_node_by_index(breakpoints[i]))))
+
+
 
 			elif (cmd[0] == 'analyze'):
 				if (len(cmd) < 3):
