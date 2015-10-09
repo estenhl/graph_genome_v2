@@ -358,7 +358,7 @@ class DOTPrinter:
 	def __init__(self, paths):
 		self.vertices = {}
 		self.edges = []
-		self.colours = {'black': '000000', 'red':'FF0000', 'blue':'ADD8E6', 'green':'7CFC00', 'yellow':'FFFF00', 'chocolate':'D2691E', 'crimson':'DC143C', 'cyan':'00FFFF', 'deep pink':'FF1493', 'indigo':'4B0082'}
+		self.colours = {'black': 0x000000, 'red':0xFF0000, 'blue':0xADD8E6, 'green':0x7CFC00, 'yellow':0xFFFF00, 'chocolate':0xD2691E, 'crimson':0xDC143C, 'cyan':0x00FFFF, 'deep pink':0xFF1493, 'indigo':0x4B0082}
 	
 		self.colour_scheme = {}
 		if (len(paths) > len(self.colours)):
@@ -416,14 +416,18 @@ class DOTPrinter:
 		file.close()
 
 def merge_colours(colours):
-	sum = 0
+	r = 0
+	g = 0
+	b = 0
 
 	for colour in colours:
-		val = int(colour, 16)
-		val = int(val / len(colours))
-		sum += val
+		r += (colour & 0xFF0000) >> 16
+		g += (colour & 0x00FF00) >> 8
+		b += colour & 0x0000FF
 
-	sum = str(sum)
-	while len(sum) < 6:
-		sum = '0' + sum
-	return sum
+
+	r = int(r / len(colours)) << 16
+	g = int(g / len(colours)) << 8
+	b = int(b / len(colours))
+
+	return hex(r + g + b)
