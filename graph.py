@@ -358,16 +358,16 @@ class DOTPrinter:
 	def __init__(self, paths):
 		self.vertices = {}
 		self.edges = []
-		self.colours = {'black': 0x000000, 'red':0xFF0000, 'blue':0xADD8E6, 'green':0x7CFC00, 'yellow':0xFFFF00, 'chocolate':0xD2691E, 'crimson':0xDC143C, 'cyan':0x00FFFF, 'deep pink':0xFF1493, 'indigo':0x4B0082}
+		self.colours = [['black', 0x000000], ['red', 0xFF0000], ['blue', 0xADD8E6], ['green', 0x7CFC00], ['yellow', 0xFFFF00], ['chocolate', 0xD2691E], ['crimson', 0xDC143C], ['cyan', 0x00FFFF], ['deep pink', 0xFF1493], ['indigo', 0x4B0082]]
 	
 		self.colour_scheme = {}
 		if (len(paths) > len(self.colours)):
 			print('Unable to handle this many paths')
 			for path in paths:
-				self.colour_scheme[path] = colours['black']
+				self.colour_scheme[path] = colours[0][1]
 		else:
 			for i in range(0, len(paths)):
-				self.colour_scheme[paths[i]] = list(self.colours.values())[i]
+				self.colour_scheme[paths[i]] = self.colours[i][1]
 
 		print('Colours: ' + str(self.colour_scheme))
 
@@ -393,7 +393,7 @@ class DOTPrinter:
 	def write(self, filename):
 		file = open(filename, 'w')
 		file.write('digraph {\n')
-		file.write('graph [rankdir=LR, fontname=fixed, splines=true overlap=false]\n\n')
+		file.write('graph [rankdir=LR, fontname=fixed, splines=true overlap=false, nodesep=10.0]\n\n')
 
 		file.write('\t// Vertices\n')
 		for key in self.vertices.keys():
@@ -401,7 +401,7 @@ class DOTPrinter:
 			for path in self.vertices[key]['paths']:
 				colours.append(self.colour_scheme[path])
 			colour = merge_colours(colours)
-			file.write('\t' + str(key) + ' [label="' + self.vertices[key]['value'] + '", xlabel="' + str(key) + '", color="#' + colour + '"];\n')
+			file.write('\t' + str(key) + ' [label="' + self.vertices[key]['value'] + '", xlabel="' + str(key) + '", color="#' + colour + '", style=filled];\n')
 
 		file.write('\n\t//Edges\n')
 		for edge in self.edges:
@@ -416,6 +416,7 @@ class DOTPrinter:
 		file.close()
 
 def merge_colours(colours):
+	print('Merging colours: ' + str(colours))
 	r = 0
 	g = 0
 	b = 0
@@ -430,4 +431,5 @@ def merge_colours(colours):
 	g = int(g / len(colours)) << 8
 	b = int(b / len(colours))
 
+	print('Returning: ' + str(hex(r + g + b)))
 	return hex(r + g + b)
