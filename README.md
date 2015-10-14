@@ -15,3 +15,11 @@ A graph-based reference genome
   Prints a summary of all critical nodes in the graph, i.e. nodes traversed by all paths, to console
 - analyze \<1\> \<2\>  
   Prints some information about nodes 1 and 2 (denoted by index) and the relation between them
+
+## TODO
+- probability \<filename\>
+  Finds the probability of a sequence from a FASTA file
+- reference
+  Finds the most probable sequence from start to end
+- align \<filename\>
+  Does a linear global alignment of a sequence from a FASTA file against the most probable sequence of the graph
