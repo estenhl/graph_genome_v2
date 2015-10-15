@@ -255,6 +255,31 @@ class Graph:
 
 		return sorted(self.head.find_critical(len(self.paths), critical))
 
+	def find_most_probable_path(self):
+		curr = self.head
+
+		path = []
+		probability = 1.0
+		while True:
+			if (curr == self.tail):
+				break
+			most = 0
+			total = 0
+			next = None
+			for neighbour in curr.neighbours:
+				total += len(neighbour.paths)
+				if (len(neighbour.paths) > most):
+					most = len(neighbour.paths)
+					next = neighbour.dest
+
+			curr = next
+			path.append(curr)
+			probability *= float(most) / total
+
+		return path, probability[0:-1]
+
+
+
 class Node:
 	def __init__(self, value, index):
 		self.value = value
