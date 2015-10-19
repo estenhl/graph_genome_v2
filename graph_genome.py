@@ -1,19 +1,20 @@
 from parser import *
 from graph import *
 from utils import *
+from index import *
 import sys
 
-valid_commands = ['build', 'quit', 'dot', 'print', 'add-global-alignment', 'add-global-alignments', 'help', 'add-vcf', 'critical', 'analyze', 'most-probable']
+valid_commands = ['build', 'quit', 'dot', 'print', 'add-global-alignment', 'add-global-alignments', 'help', 'add-vcf', 'critical', 'analyze', 'most-probable', 'index']
 valid_flags = ['--fasta']
 
 def parse_command(args):
 	if (len(args) < 0):
-		print('Invalid command: ' + args)
+		print('Invalid command: ' + str(args))
 		return False, [], []
 
 	command = args[0]
 	if not command in valid_commands:
-		print('Invalid command: ' + args)
+		print('Invalid command: ' + str(args))
 		return False, [], []
 	flags = []
 	params = []
@@ -32,9 +33,6 @@ def command_loop():
 
 	while (True):
 		cmd, flags, params = parse_command(input('Command ("help" for help):').split(" "))
-		print(cmd)
-		print(flags)
-		print(params)
 		if not cmd:
 			print('Type "help" for help')
 			continue
@@ -172,6 +170,9 @@ def command_loop():
 					print('All paths must go through ' + str(index2) + ' but not ' + str(index1))
 				else:
 					print('There exists paths which does not go through either ' + str(index1) + ' or ' + str(index2))
+		elif (cmd == 'index'):
+			index = generate_left_right_index(graph)
+			print(index.map_sequence(params[0]))
 
 def print_help():
 	print('Available commands:')

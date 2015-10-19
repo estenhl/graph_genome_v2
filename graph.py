@@ -278,7 +278,17 @@ class Graph:
 
 		return path, probability[0:-1]
 
+	def set_all_visited(self, value):
+		self.head.set_visited(value)
 
+	def generate_left_right_contexts(self):
+		self.set_all_visited(False)
+
+		left_contexts = []
+		right_contexts = []
+		self.head.generate_left_right_index(left_contexts, right_contexts)
+
+		return left_contexts, right_contexts
 
 class Node:
 	def __init__(self, value, index):
@@ -335,8 +345,6 @@ class Node:
 
 			return {'node': False, 'length': float('inf')}
 
-
-
 		return True
 
 	def get_edge(self, target):
@@ -352,6 +360,12 @@ class Node:
 				return True
 
 		return False
+
+	def set_visited(self, value):
+		self.visited = value
+		for neighbour in self.get_neighbours():
+			if not (hasattr(neighbour, 'visited') and neighbour.visited == value):
+				neighbour.set_visited(value)
 
 	def find_critical(self, paths, critical):
 		self.visited = True
@@ -373,6 +387,40 @@ class Node:
 
 		return critical
 
+	def generate_left_right_index(self, left_contexts, right_contexts):
+		self.visited = True
+
+		my_left = []
+		my_right = []
+
+		for incoming in self.incoming:
+			incoming.src.build_left_index('', my_left)
+		for neighbour in self.neighbours:
+			neighbour.dest.build_right_index('', my_right)
+		for context in my_left:
+			left_contexts.append({'context': context, 'index': self.index})
+		for context in my_right:
+			right_contexts.append({'context': context, 'index': self.index})
+
+		for neighbour in self.neighbours:
+			if not (hasattr(neighbour.dest, 'visited') and neighbour.dest.visited):
+				neighbour.dest.generate_left_right_index(left_contexts, right_contexts)
+
+	def build_left_index(self, str, contexts):
+		if (self.index == HEAD_INDEX):
+			if (len(str) > 0):
+				contexts.append(str)
+		else:
+			for incoming in self.incoming:
+				incoming.src.build_left_index(str + self.value, contexts)
+
+	def build_right_index(self, str, contexts):
+		if (self.index == TAIL_INDEX):
+			contexts.append(str)
+		else:
+			for neighbour in self.neighbours:
+				neighbour.dest.build_right_index(str + self.value, contexts)
+
 class Edge:
 	def __init__(self, src, dest, path):
 		self.src = src
@@ -383,7 +431,7 @@ class DOTPrinter:
 	def __init__(self, paths):
 		self.vertices = {}
 		self.edges = []
-		self.colours = [['black', 0x000000], ['red', 0xFF0000], ['blue', 0xADD8E6], ['green', 0x7CFC00], ['yellow', 0xFFFF00], ['chocolate', 0xD2691E], ['crimson', 0xDC143C], ['cyan', 0x00FFFF], ['deep pink', 0xFF1493], ['indigo', 0x4B0082]]
+		self.colours = [['green', 0x7CFC00], ['black', 0x000000], ['red', 0xFF0000], ['blue', 0xADD8E6], ['yellow', 0xFFFF00], ['chocolate', 0xD2691E], ['crimson', 0xDC143C], ['cyan', 0x00FFFF], ['deep pink', 0xFF1493], ['indigo', 0x4B0082]]
 	
 		self.colour_scheme = {}
 		if (len(paths) > len(self.colours)):
@@ -441,7 +489,6 @@ class DOTPrinter:
 		file.close()
 
 def merge_colours(colours):
-	print('Merging colours: ' + str(colours))
 	r = 0
 	g = 0
 	b = 0
@@ -456,5 +503,4 @@ def merge_colours(colours):
 	g = int(g / len(colours)) << 8
 	b = int(b / len(colours))
 
-	print('Returning: ' + str(hex(r + g + b)))
 	return hex(r + g + b)
