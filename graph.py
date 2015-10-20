@@ -284,8 +284,8 @@ class Graph:
 	def generate_left_right_contexts(self):
 		self.set_all_visited(False)
 
-		left_contexts = []
-		right_contexts = []
+		left_contexts = {}
+		right_contexts = {}
 		self.head.generate_left_right_index(left_contexts, right_contexts)
 
 		return left_contexts, right_contexts
@@ -398,9 +398,9 @@ class Node:
 		for neighbour in self.neighbours:
 			neighbour.dest.build_right_index('', my_right)
 		for context in my_left:
-			left_contexts.append({'context': context, 'index': self.index})
+			left_contexts[context + str(self.index)] = {'context': context, 'index': self.index}
 		for context in my_right:
-			right_contexts.append({'context': context, 'index': self.index})
+			right_contexts[context + str(self.index)] = {'context': context, 'index': self.index}
 
 		for neighbour in self.neighbours:
 			if not (hasattr(neighbour.dest, 'visited') and neighbour.dest.visited):
@@ -487,20 +487,3 @@ class DOTPrinter:
 
 		file.write('}')
 		file.close()
-
-def merge_colours(colours):
-	r = 0
-	g = 0
-	b = 0
-
-	for colour in colours:
-		r += (colour & 0xFF0000) >> 16
-		g += (colour & 0x00FF00) >> 8
-		b += colour & 0x0000FF
-
-
-	r = int(r / len(colours)) << 16
-	g = int(g / len(colours)) << 8
-	b = int(b / len(colours))
-
-	return hex(r + g + b)

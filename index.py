@@ -50,8 +50,8 @@ class LeftRightIndex:
 def generate_left_right_index(graph):
 	left_contexts, right_contexts = graph.generate_left_right_contexts()
 
-	sorted_left = sorted(left_contexts, key=lambda k: k['context']) 
-	sorted_right = sorted(right_contexts, key=lambda k: k['context'])
+	sorted_left = sorted(left_contexts.values(), key=lambda k: k['context']) 
+	sorted_right = sorted(right_contexts.values(), key=lambda k: k['context'])
 	minimized_left = minimize_context_index(sorted_left)
 	minimized_right = minimize_context_index(sorted_right)
 
@@ -67,7 +67,6 @@ def longest_common_substring(s1, s2):
 
 def minimize_context_index(index):
 	minimized = []
-	operations = 2
 
 	common = longest_common_substring(index[0]['context'], index[1]['context'])
 	if (len(index[0]['context']) > common):
@@ -76,8 +75,6 @@ def minimize_context_index(index):
 	for i in range(1, len(index) - 1):
 		prev_common = longest_common_substring(index[i - 1]['context'], index[i]['context'])
 		next_common = longest_common_substring(index[i]['context'], index[i + 1]['context'])
-		operations += 1
-
 		
 		if (prev_common > next_common):
 			minimized.append({'context': index[i]['context'][:prev_common + 1], 'index': index[i]['index']})
@@ -87,7 +84,6 @@ def minimize_context_index(index):
 	common = longest_common_substring(index[-1]['context'], index[-2]['context'])
 	if (len(index[-1]['context']) > common):
 		minimized.append({'context': index[-1]['context'][:common + 1], 'index': index[-1]['index']})
-	print('Operations in minimize: ' + str(operations))
 
 	return minimized
 
