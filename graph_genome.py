@@ -4,7 +4,7 @@ from utils import *
 from index import *
 import sys
 
-valid_commands = ['build', 'quit', 'dot', 'print', 'add-global-alignment', 'add-global-alignments', 'help', 'add-vcf', 'critical', 'analyze', 'most-probable', 'index']
+valid_commands = ['build', 'quit', 'dot', 'print', 'add-global-alignment', 'add-global-alignments', 'help', 'add-vcf', 'critical', 'analyze', 'most-probable', 'index', 'map']
 valid_flags = ['--fasta']
 
 def parse_command(args):
@@ -30,8 +30,9 @@ def parse_command(args):
 def command_loop():
 	cmd = True
 	graph = None
+	index = None
 
-	while (True):
+	while not (cmd == 'quit' or cmd == 'q'):
 		cmd, flags, params = parse_command(input('Command ("help" for help):').split(" "))
 		if not cmd:
 			print('Type "help" for help')
@@ -172,7 +173,14 @@ def command_loop():
 					print('There exists paths which does not go through either ' + str(index1) + ' or ' + str(index2))
 		elif (cmd == 'index'):
 			index = generate_left_right_index(graph)
-			print(index.map_sequence(params[0]))
+		elif (cmd == 'map'):
+			if not index:
+				print('Needs to build an index first! See "index"')
+			elif ('--fasta' in flags):
+				print('Not implemented yet')
+			else:
+				print(index.map_sequence(params[0]))
+
 
 def print_help():
 	print('Available commands:')
