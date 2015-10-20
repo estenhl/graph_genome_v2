@@ -152,19 +152,17 @@ def parse_global_alignment(filename):
 		name = name.split('/')[-1]
 	return filename, alignment1, alignment2
 
-def generate_graph_from_alignment(alignment, name, graph):
-	path = []
+def write_left_right_index_to_file(index, filename):
+	left_contexts = index.left_contexts
+	right_contexts = index.right_contexts
 
-	prev = None
-	for i in range(0, len(alignment)):
-		if (alignment[i] == '-'):
-			path.append(None)
-		else:
-			curr = Node(alignment[i], graph.current_index)
-			graph.current_index += 1
-			if (prev):
-				prev.add_neighbour(curr, name)
-			prev = curr
-			path.append(prev)
+	writer = open(filename, 'w')
+	writer.write('left_context#' + str(len(left_contexts)) + '\n')
+	for context in left_contexts:
+		writer.write(context['context'] + '#' + str(context['index']) + '\n')
+	writer.write('\nright_context#' + str(len(right_contexts)) + '\n')
+	for context in right_contexts:
+		writer.write(context['context'] + '#' + str(context['index']) + '\n')
 
-	return path
+	writer.close()
+

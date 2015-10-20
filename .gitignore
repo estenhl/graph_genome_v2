@@ -1,2 +1,3 @@
 *.dot
+*.index
 __pycache__/*
