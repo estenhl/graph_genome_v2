@@ -1,9 +1,12 @@
+from utils import *
+
 HEAD_VALUE = 'Head'
 TAIL_VALUE = 'Tail'
 HEAD_INDEX = 0
 TAIL_INDEX = float('inf')
 REFERENCE_PATH_INDEX = 'REF'
 INDEL = '-'
+END_SYMBOL = '$'
 
 class Graph:
 	def __init__(self, id, description, species):
@@ -409,14 +412,14 @@ class Node:
 	def build_left_index(self, str, contexts):
 		if (self.index == HEAD_INDEX):
 			if (len(str) > 0):
-				contexts.append(str)
+				contexts.append(str + END_SYMBOL)
 		else:
 			for incoming in self.incoming:
 				incoming.src.build_left_index(str + self.value, contexts)
 
 	def build_right_index(self, str, contexts):
 		if (self.index == TAIL_INDEX):
-			contexts.append(str)
+			contexts.append(str + END_SYMBOL)
 		else:
 			for neighbour in self.neighbours:
 				neighbour.dest.build_right_index(str + self.value, contexts)

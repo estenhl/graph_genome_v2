@@ -1,4 +1,5 @@
-MAX_ERRORS = 3
+MAX_ERRORS = 1
+LENGTH_MULTIPLIER = 0.5
 
 class SuffixTree:
 	def __init__(self):
@@ -17,7 +18,7 @@ class SuffixTree:
 		curr.indexes.append(index)
 
 	def lookup(self, word):
-		return self.root.recursive_search(word, 0)
+		return self.root.recursive_search(word, '', 0, 0)
 
 	def __str__(self):
 		return self.root.pretty_print(0)
@@ -27,18 +28,24 @@ class SuffixTreeNode:
 		self.indexes = []
 		self.children = {}
 
-	def recursive_search(self, s, errors):
+	def recursive_search(self, s, path, errors, depth):
 		if (errors > MAX_ERRORS):
 			return {}
+		elif (len(self.indexes) > 0):
+			matches = {}
+			for index in self.indexes:
+				matches[index] = MAX_ERRORS - errors + depth * LENGTH_MULTIPLIER
+
+			return matches
 		elif (len(s) == 0):
 			matches = {}
 			if (len(self.indexes) > 0):
 				for index in self.indexes:
-					matches[index] = errors
+					matches[index] = MAX_ERRORS - errors + depth * LENGTH_MULTIPLIER
 
 			for child in self.children:
-				for (index, score) in self.children[child].recursive_search('', errors).items():
-					if not index in matches or score < matches[index]:
+				for (index, score) in self.children[child].recursive_search('', path, errors, depth).items():
+					if not index in matches or score > matches[index]:
 						matches[index] = score
 
 			return matches
@@ -46,23 +53,23 @@ class SuffixTreeNode:
 			# Continues down the correct path
 			matches = {}
 			if (s[0] in self.children):
-				matches = self.children[s[0]].recursive_search(s[1:], errors)
+				matches = self.children[s[0]].recursive_search(s[1:], path + s[0], errors, depth + 1)
 
 			for child in self.children:
 				if not (child == s[0]):
 					# INDEL
-					for (index, score) in self.children[child].recursive_search(s[1:], errors + 1).items():
-						if not index in matches or score < matches[index]:
+					for (index, score) in self.children[child].recursive_search(s[1:], path + child, errors + 1, depth + 1).items():
+						if not index in matches or score > matches[index]:
 							matches[index] = score
 
 					# Gap in indexed sequences
-					for (index, score) in self.children[child].recursive_search(s, errors + 1).items():
-						if not index in matches or score < matches[index]:
+					for (index, score) in self.children[child].recursive_search(s, path + '-', errors + 1, depth + 1).items():
+						if not index in matches or score > matches[index]:
 							matches[index] = score
 
 			# Gap in given sequence
-			for (index, score) in self.recursive_search(s[1:], errors + 1).items():
-				if not index in matches or score < matches[index]:
+			for (index, score) in self.recursive_search(s[1:], path[:-1], errors + 1, depth + 1).items():
+				if not index in matches or score > matches[index]:
 					matches[index] = score
 
 			return matches

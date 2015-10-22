@@ -41,17 +41,30 @@ class LeftRightIndex:
 	def map_node(self, left_context, right_context):
 		left_mapping = self.map_left_context(left_context)
 		right_mapping = self.map_right_context(right_context)
+		print('right_context: ' + right_context)
+		print(right_mapping)
 
-		print(str(left_mapping) + ' ' + str(right_mapping))
+		print(right_mapping)
+		for (index, score) in left_mapping.items():
+			if index in right_mapping:
+				right_mapping[index] = right_mapping[index] + score
+			else:
+				right_mapping[index] = score
+		mappings = sorted(right_mapping.items(), key=lambda k: k[1], reverse=True)
 
-		return []
+		equal = 0
+		i = 1
+		while (i < len(mappings) and mappings[i - 1] == mappings[i]):
+			i += 1
+
+		return mappings[:i]
 
 	def map_sequence(self, sequence):
 		mappings = []
 		for i in range(0, len(sequence) - 1):
 			mappings.append(self.map_node(sequence[0:i][::-1], sequence[i + 1:]))
 
-		#return mappings
+		return mappings
 
 def generate_left_right_index(graph):
 	left_contexts, right_contexts = graph.generate_left_right_contexts()
@@ -68,6 +81,7 @@ def generate_left_right_index(graph):
 		index.left_suffix_tree.add_word(pair['context'], pair['index'])
 	for pair in minimized_right:
 		index.right_suffix_tree.add_word(pair['context'], pair['index'])
+	print(index.right_suffix_tree)
 
 	return index
 
@@ -91,9 +105,9 @@ def minimize_context_index(index):
 		next_common = longest_common_substring(index[i]['context'], index[i + 1]['context'])
 
 		if (prev_common > next_common):
-			minimized.append({'context': index[i]['context'][:prev_common], 'index': index[i]['index']})
+			minimized.append({'context': index[i]['context'][:prev_common + 1], 'index': index[i]['index']})
 		else:
-			minimized.append({'context': index[i]['context'][:next_common], 'index': index[i]['index']})
+			minimized.append({'context': index[i]['context'][:next_common + 1], 'index': index[i]['index']})
 
 	common = longest_common_substring(index[-1]['context'], index[-2]['context'])
 	if (len(index[-1]['context']) > common):
