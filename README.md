@@ -25,7 +25,7 @@ A graph-based reference genome
   (NOT FINISHED) Maps a sequence against the graph
 
 ## Alignment procedure:
-### 1. Build (index, score)-list for each character in input sequence
+#### 1. Build (index, score)-list for each character in input sequence
   1. Build a suffix-tree for left and right contexts of all nodes in the graph<break />
   2. Do a fuzzy search against the suffix-tree, returning pairs of possible matches and their score
     Tunable parameters:
@@ -41,9 +41,7 @@ A graph-based reference genome
   Optimize building of index
   Check for matches in the last step
 
-### 2. Use list of (index, score)-pairs to map against graph
-  Possibilities:<break />
+#### 2. Use list of (index, score)-pairs to map against graph
     - Maximize probability(path in graph)*score(path through (index, score)-list)
     - Map "locked" regions of the input sequence against critical region of the graph
-    - ???
 
