@@ -42,7 +42,7 @@ A graph-based reference genome
   Check for matches in the last step
 
 ### 2. Use list of (index, score)-pairs to map against graph
-  Possibilities:
+  Possibilities:<break />
     - Maximize probability(path in graph)*score(path through (index, score)-list)
     - Map "locked" regions of the input sequence against critical region of the graph
     - ???
