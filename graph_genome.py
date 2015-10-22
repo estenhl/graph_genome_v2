@@ -239,7 +239,11 @@ def handle_map(graph, index, params, flags):
 	if ('--fasta' in flags):
 		print('Not implemented yet, use "map <sequence>"')
 	elif (len(params) == 1):
-		print(index.map_sequence(params[0]))
+		mappings = index.map_sequence(params[0])
+		print(mappings)
+		print(params[0])
+		scaled_mappings = scale_mapping(graph, mappings, params[0])
+		print(scaled_mappings)
 	else:
 		print('"map" takes exactly one argument, a sequence to be mapped')
 

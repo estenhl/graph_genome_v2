@@ -1,12 +1,5 @@
 from utils import *
-
-HEAD_VALUE = 'Head'
-TAIL_VALUE = 'Tail'
-HEAD_INDEX = 0
-TAIL_INDEX = float('inf')
-REFERENCE_PATH_INDEX = 'REF'
-INDEL = '-'
-END_SYMBOL = '$'
+from constants import *
 
 class Graph:
 	def __init__(self, id, description, species):

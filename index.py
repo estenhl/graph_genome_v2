@@ -1,5 +1,6 @@
 from graph import *
 from suffix_tree import *
+from params import *
 
 class LeftRightIndex:
 	def __init__(self):
@@ -41,10 +42,7 @@ class LeftRightIndex:
 	def map_node(self, left_context, right_context):
 		left_mapping = self.map_left_context(left_context)
 		right_mapping = self.map_right_context(right_context)
-		print('right_context: ' + right_context)
-		print(right_mapping)
 
-		print(right_mapping)
 		for (index, score) in left_mapping.items():
 			if index in right_mapping:
 				right_mapping[index] = right_mapping[index] + score
@@ -54,14 +52,15 @@ class LeftRightIndex:
 
 		equal = 0
 		i = 1
-		while (i < len(mappings) and mappings[i - 1] == mappings[i]):
+		while (i < len(mappings) and mappings[i - 1][1] - mappings[i][1] < CONTEXT_MAPPING_SCORE_THRESHOLD):
 			i += 1
 
 		return mappings[:i]
 
 	def map_sequence(self, sequence):
 		mappings = []
-		for i in range(0, len(sequence) - 1):
+		sequence = END_SYMBOL + sequence + END_SYMBOL
+		for i in range(1, len(sequence) - 1):
 			mappings.append(self.map_node(sequence[0:i][::-1], sequence[i + 1:]))
 
 		return mappings
@@ -81,7 +80,6 @@ def generate_left_right_index(graph):
 		index.left_suffix_tree.add_word(pair['context'], pair['index'])
 	for pair in minimized_right:
 		index.right_suffix_tree.add_word(pair['context'], pair['index'])
-	print(index.right_suffix_tree)
 
 	return index
 
