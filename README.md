@@ -26,14 +26,14 @@ A graph-based reference genome
 
 ## Alignment procedure:
 ### 1. Build (index, score)-list for each character in input sequence
-  Build a suffix-tree for left and right contexts of all nodes in the graph
-  Do a fuzzy search against the suffix-tree, returning pairs of possible matches and their score
+  1. Build a suffix-tree for left and right contexts of all nodes in the graph<break />
+  2. Do a fuzzy search against the suffix-tree, returning pairs of possible matches and their score
     Tunable parameters:
     - Maximum errors allowed
     - Scoring ratio for max_errors - actual_erorrs
     - Length of match before max_errors is increased
     - Scoring ratio for length of match
-  Update each pair if the character from the sequence matches graph[index]
+  3. Update each pair if the character from the sequence matches graph[index]
     Tunable parameters:
     - Scoring ratio for match (can be variant)
 
