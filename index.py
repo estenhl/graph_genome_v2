@@ -49,12 +49,15 @@ class LeftRightIndex:
 			else:
 				right_mapping[index] = score
 		mappings = sorted(right_mapping.items(), key=lambda k: k[1], reverse=True)
-		print(mappings)
+		print('Mapping ' + left_context + ' ' + right_context)
+		print(str(left_mapping))
+		print(str(right_mapping))
 		equal = 0
 		i = 1
 		while (i < len(mappings) and mappings[i - 1][1] - mappings[i][1] < CONTEXT_MAPPING_SCORE_THRESHOLD):
 			i += 1
-		print(mappings[0:i])
+
+		print(mappings)
 		return mappings[:i]
 
 	def map_sequence(self, sequence):
