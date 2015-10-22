@@ -1,4 +1,3 @@
-from utils import *
 from constants import *
 
 class Graph:
@@ -280,11 +279,17 @@ class Graph:
 	def generate_left_right_contexts(self):
 		self.set_all_visited(False)
 
-		left_contexts = {}
-		right_contexts = {}
-		self.head.generate_left_right_index(left_contexts, right_contexts)
+		left_contexts = []
+		right_contexts = []
+		self.clear_contexts()
+		self.tail.generate_left_right_index(left_contexts, 'left')
+		self.clear_contexts()
+		self.head.generate_left_right_index(right_contexts, 'right')
 
 		return left_contexts, right_contexts
+
+	def clear_contexts(self):
+		self.head.clear_contexts()
 
 class Node:
 	def __init__(self, value, index):
@@ -383,6 +388,45 @@ class Node:
 
 		return critical
 
+	def generate_left_right_index(self, contexts, direction):
+		if (hasattr(self, 'contexts') and len(self.contexts) > 0):
+			return self.contexts
+
+		if direction == 'left':
+			end_index = HEAD_INDEX
+			next = self.incoming
+			target = 'src'
+		else:
+			end_index = TAIL_INDEX
+			next = self.neighbours
+			target = 'dest'
+
+		if (self.index == end_index):
+			print('Found goal')
+			return ['$']
+		else:
+			self.contexts = {}
+			for edge in next:
+				for context in edge.get_node(target).generate_left_right_index(contexts, direction):
+					self.contexts[context + str(self.index)] = {'context': context, 'index': self.index}
+
+			l = []
+			for key in self.contexts:
+				if (direction == 'left'):
+					l.append(self.contexts[key]['context'] + self.value)
+				else:
+					l.append(self.value + self.contexts[key]['context'])
+				contexts.append(self.contexts[key])
+
+			return l
+
+	def clear_contexts(self):
+		self.contexts = {}
+		for neighbour in self.get_neighbours():
+			if (hasattr(neighbour, 'contexts') and len(neighbour.contexts) > 0):
+				neighbour.clear_contexts()
+
+	"""
 	def generate_left_right_index(self, left_contexts, right_contexts):
 		self.visited = True
 
@@ -416,12 +460,20 @@ class Node:
 		else:
 			for neighbour in self.neighbours:
 				neighbour.dest.build_right_index(str + self.value, contexts)
-
+	"""
 class Edge:
 	def __init__(self, src, dest, path):
 		self.src = src
 		self.dest = dest
 		self.paths = [path]
+
+	def get_node(self, name):
+		if (name == 'src'):
+			return self.src
+		elif (name == 'dest'):
+			return self.dest
+		else:
+			return None
 
 class DOTPrinter:
 	def __init__(self, paths):

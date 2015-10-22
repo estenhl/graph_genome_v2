@@ -240,10 +240,9 @@ def handle_map(graph, index, params, flags):
 		print('Not implemented yet, use "map <sequence>"')
 	elif (len(params) == 1):
 		mappings = index.map_sequence(params[0])
-		print(mappings)
-		print(params[0])
 		scaled_mappings = scale_mapping(graph, mappings, params[0])
-		print(scaled_mappings)
+		for mapping in scaled_mappings:
+			print(mapping[0])
 	else:
 		print('"map" takes exactly one argument, a sequence to be mapped')
 

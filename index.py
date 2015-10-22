@@ -68,8 +68,8 @@ class LeftRightIndex:
 def generate_left_right_index(graph):
 	left_contexts, right_contexts = graph.generate_left_right_contexts()
 
-	sorted_left = sorted(left_contexts.values(), key=lambda k: k['context']) 
-	sorted_right = sorted(right_contexts.values(), key=lambda k: k['context'])
+	sorted_left = sorted(left_contexts, key=lambda k: k['context']) 
+	sorted_right = sorted(right_contexts, key=lambda k: k['context'])
 	minimized_left = minimize_context_index(sorted_left)
 	minimized_right = minimize_context_index(sorted_right)
 
