@@ -25,23 +25,6 @@ def generate_graph_from_alignment(alignment, name, graph):
 
 	return path
 
-def merge_colours(colours):
-	r = 0
-	g = 0
-	b = 0
-
-	for colour in colours:
-		r += (colour & 0xFF0000) >> 16
-		g += (colour & 0x00FF00) >> 8
-		b += colour & 0x0000FF
-
-
-	r = int(r / len(colours)) << 16
-	g = int(g / len(colours)) << 8
-	b = int(b / len(colours))
-
-	return hex(r + g + b)
-
 def scale_mapping(graph, mappings, sequence):
 	scaled_mappings = []
 	for i in range(0, len(sequence)):

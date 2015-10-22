@@ -402,7 +402,6 @@ class Node:
 			target = 'dest'
 
 		if (self.index == end_index):
-			print('Found goal')
 			return ['$']
 		else:
 			self.contexts = {}
@@ -413,7 +412,7 @@ class Node:
 			l = []
 			for key in self.contexts:
 				if (direction == 'left'):
-					l.append(self.contexts[key]['context'] + self.value)
+					l.append(self.value + self.contexts[key]['context'])
 				else:
 					l.append(self.value + self.contexts[key]['context'])
 				contexts.append(self.contexts[key])
@@ -479,7 +478,7 @@ class DOTPrinter:
 	def __init__(self, paths):
 		self.vertices = {}
 		self.edges = []
-		self.colours = [['green', 0x7CFC00], ['black', 0x000000], ['red', 0xFF0000], ['blue', 0xADD8E6], ['yellow', 0xFFFF00], ['chocolate', 0xD2691E], ['crimson', 0xDC143C], ['cyan', 0x00FFFF], ['deep pink', 0xFF1493], ['indigo', 0x4B0082]]
+		self.colours = [['green', 0x7CFC00], ['red', 0xFF0000], ['black', 0x000000], ['blue', 0xADD8E6], ['yellow', 0xFFFF00], ['chocolate', 0xD2691E], ['crimson', 0xDC143C], ['cyan', 0x00FFFF], ['deep pink', 0xFF1493], ['indigo', 0x4B0082]]
 	
 		self.colour_scheme = {}
 		if (len(paths) > len(self.colours)):
@@ -514,7 +513,7 @@ class DOTPrinter:
 	def write(self, filename):
 		file = open(filename, 'w')
 		file.write('digraph {\n')
-		file.write('graph [rankdir=LR, fontname=fixed, splines=true overlap=false, nodesep=10.0]\n\n')
+		file.write('graph [rankdir=LR, fontname=fixed, splines=true overlap=false, nodesep=1.0]\n\n')
 
 		file.write('\t// Vertices\n')
 		for key in self.vertices.keys():
@@ -535,3 +534,20 @@ class DOTPrinter:
 
 		file.write('}')
 		file.close()
+
+def merge_colours(colours):
+	r = 0
+	g = 0
+	b = 0
+
+	for colour in colours:
+		r += (colour & 0xFF0000) >> 16
+		g += (colour & 0x00FF00) >> 8
+		b += colour & 0x0000FF
+
+
+	r = int(r / len(colours)) << 16
+	g = int(g / len(colours)) << 8
+	b = int(b / len(colours))
+
+	return hex(r + g + b)
