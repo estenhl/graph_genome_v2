@@ -390,7 +390,10 @@ class Node:
 
 	def generate_left_right_index(self, contexts, direction):
 		if (hasattr(self, 'contexts') and len(self.contexts) > 0):
-			return self.contexts
+			l = []
+			for value in self.contexts.values():
+				l.append(self.value + value['context'])
+			return l
 
 		if direction == 'left':
 			end_index = HEAD_INDEX

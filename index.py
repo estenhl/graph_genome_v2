@@ -59,9 +59,10 @@ class LeftRightIndex:
 
 	def map_sequence(self, sequence):
 		mappings = []
-		sequence = END_SYMBOL + sequence + END_SYMBOL
-		for i in range(1, len(sequence) - 1):
+		sequence = sequence
+		for i in range(0, len(sequence) - 1):
 			mappings.append(self.map_node(sequence[0:i][::-1], sequence[i + 1:]))
+		mappings.append(self.map_node(sequence[0:-2], ''))
 
 		return mappings
 
@@ -70,7 +71,10 @@ def generate_left_right_index(graph):
 
 	sorted_left = sorted(left_contexts, key=lambda k: k['context']) 
 	sorted_right = sorted(right_contexts, key=lambda k: k['context'])
+	prune_duplicates(sorted_left)
+	prune_duplicates(sorted_right)
 	minimized_left = minimize_context_index(sorted_left)
+	print('left: ' + str(sorted_left))
 	minimized_right = minimize_context_index(sorted_right)
 
 	index = LeftRightIndex()
@@ -90,6 +94,15 @@ def longest_common_substring(s1, s2):
 			return i
 		i += 1
 	return i
+
+def prune_duplicates(l):
+	to_delete = []
+	for i in range(0, len(l) - 1):
+		if (l[i]['index'] == l[i + 1]['index']):
+			to_delete.append(i + 1)
+
+	for index in to_delete[::-1]:
+		del l[index]
 
 def minimize_context_index(index):
 	minimized = []
