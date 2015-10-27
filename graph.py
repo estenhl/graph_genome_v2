@@ -1,4 +1,6 @@
 from constants import *
+from random import *
+from region import *
 
 class Graph:
 	def __init__(self, id, description, species):
@@ -10,9 +12,22 @@ class Graph:
 		self.current_path = REFERENCE_PATH_INDEX
 		self.current_index = 0
 		self.paths = [REFERENCE_PATH_INDEX]
+		self.nodes = [self.head, self.tail]
+
+	def add_node(self, node):
+		length = len(self.nodes)
+		del self.nodes[-1]
+		if (node.index != len(self.nodes)):
+			node.index = len(self.nodes)
+		self.nodes.append(node)
+		self.nodes.append(self.tail)
+		self.current_index += 1
 
 	def get_node_by_index(self, index):
-		return self.head.recursive_search(index)['node']
+		if (index == float('inf')):
+			return self.tail
+
+		return self.nodes[index]
 
 	def get_reference_genome_representation(self):
 		reference = self.get_reference_genome()
@@ -67,20 +82,21 @@ class Graph:
 			old_snp.get_edge(next).paths.append(path)
 		else:
 			new = Node(value, self.current_index)
-			self.current_index += 1
+			self.add_node(new)
 			prev.add_neighbour(new, path)
 			new.add_neighbour(next, path)
 
 		self.add_path(next, TAIL_INDEX, REFERENCE_PATH_INDEX, path)
 
 	def add_deletion(self, length, index, path):
+		print('Length of deletion: ' + str(length))
 		if not path in self.paths:
 			self.paths.append(path)
 
 		prev = self.add_path(self.head, index, REFERENCE_PATH_INDEX, path)
 
 		next = prev
-		for i in range(0, length):
+		for i in range(0, length + 1):
 			tmp = next.get_neighbour_by_path(REFERENCE_PATH_INDEX)
 			edge = next.get_edge(tmp)
 			if (path in edge.paths):
@@ -120,10 +136,17 @@ class Graph:
 		self.add_path(next, TAIL_INDEX, REFERENCE_PATH_INDEX, path)
 
 	def generate_insertion(self, prev, next, value, path):
+		for neighbour in prev.neighbours:
+			if path in neighbour.paths:
+				if (len(neighbour.paths) == 1):
+					prev.neighbours.remove(neighbour)
+				else:
+					neighbour.paths.remove(path)
+
 		first = prev.get_neighbour_by_base(value[1])
 		if not first:
 			first = Node(value[1], self.current_index)
-			self.current_index += 1
+			self.add_node(first)
 			prev.add_neighbour(first, path)
 		else:
 			prev.get_edge(first).paths.append(path)
@@ -136,7 +159,7 @@ class Graph:
 				last = old_insert
 			else:
 				new = Node(value[i], self.current_index)
-				self.current_index += 1
+				self.add_node(new)
 				last.add_neighbour(new, path)
 				last = new
 
@@ -168,6 +191,7 @@ class Graph:
 			if not path[i]:
 				print('Gap in path')
 				new_prev = new_path[i]
+				self.add_node(new_path[i])
 			elif not new_path[i]:
 				print('Gap in new_path')
 				prev = path[i]
@@ -193,6 +217,7 @@ class Graph:
 				continue
 			else:
 				print('SNP: ' + path[i].value + '/' + new_path[i].value)
+				self.add_node(new_path[i])
 				new_prev = new_path[i]
 				prev = path[i]
 
@@ -238,15 +263,26 @@ class Graph:
 		printer.search(self.head)
 		printer.write(filename)
 
-	def is_critical(self, index):
+	def is_critical(self, node):
+		print('Self: ' + str(self.paths))
+
 		size = 0
-		for neighbour in self.get_node_by_index(index).neighbours:
+		for neighbour in node.neighbours:
 			size += len(neighbour.paths)
+			print(str(neighbour.paths))
 
 		return size == len(self.paths)
 
+	def is_index_critical(self, index):
+		return self.is_critical(self.get_node_by_index(index))
+
 	def find_critical_regions(self):
 		critical = []
+		for i in range(0, len(self.nodes)):
+			if (self.is_critical(self.get_node_by_index(i))):
+				critical.append(i)
+
+		print(critical)
 
 		return sorted(self.head.find_critical(len(self.paths), critical))
 
@@ -274,7 +310,8 @@ class Graph:
 		return path, probability[0:-1]
 
 	def set_all_visited(self, value):
-		self.head.set_visited(value)
+		for node in self.nodes:
+			node.visited = value
 
 	def generate_left_right_contexts(self):
 		self.set_all_visited(False)
@@ -289,7 +326,56 @@ class Graph:
 		return left_contexts, right_contexts
 
 	def clear_contexts(self):
-		self.head.clear_contexts()
+		for node in self.nodes:
+			node.contexts = {}
+
+	def get_regions(self):
+		self.set_all_visited(False)
+
+		curr = self.head
+		critical = True
+		regions = []
+		i = 0
+		while (curr.index != TAIL_INDEX):
+			region = Region(i, curr)
+			curr = self.get_regions_rec(curr, region, critical, True)
+			print('Ended region in ' + str(curr.index))
+			critical = not critical
+			regions.append(region)
+			i += 1
+
+		return regions
+
+	def get_regions_rec(self, curr, region, critical, first):
+		if (curr.index == TAIL_INDEX):
+			return curr
+		if (critical):
+			region.add_node(curr)
+			if (len(curr.neighbours) > 1):
+				return curr
+			return self.get_regions_rec(curr.neighbours[0].dest, region, critical, False)
+		else:
+			region.add_node(curr)
+			if ((not first) and self.is_critical(curr)):
+				return curr
+			end = False
+			for neighbour in curr.get_neighbours():
+				if not (hasattr(neighbour, 'visited')):
+					print('NO VISITED')
+					print(neighbour.index)
+					print(neighbour)
+					print(neighbour.value)
+					print(self.get_node_by_index(neighbour.index).index)
+					exit()
+				temp = False
+				if not neighbour.visited:
+					temp = self.get_regions_rec(neighbour, region, critical, False)
+				if end and temp and end.index != temp.index:
+					print('Found two different end nodes!')
+					print(str(end.index) + ' and ' + str(temp.index))
+				elif temp:
+					end = temp
+			return end
 
 class Node:
 	def __init__(self, value, index):
@@ -368,26 +454,6 @@ class Node:
 			if not (hasattr(neighbour, 'visited') and neighbour.visited == value):
 				neighbour.set_visited(value)
 
-	def find_critical(self, paths, critical):
-		self.visited = True
-
-		out = 0
-		for neighbour in self.neighbours:
-			out += len(neighbour.paths)
-
-		inc = 0
-		for incoming in self.incoming:
-			inc += len(incoming.paths)
-
-		if out == paths or inc == paths:
-			critical.append(self.index)
-
-		for neighbour in self.neighbours:
-			if not (hasattr(neighbour.dest, 'visited') and neighbour.dest.visited):
-				neighbour.dest.find_critical(paths, critical)
-
-		return critical
-
 	def generate_left_right_index(self, contexts, direction):
 		if (hasattr(self, 'contexts') and len(self.contexts) > 0):
 			l = []
@@ -422,47 +488,6 @@ class Node:
 
 			return l
 
-	def clear_contexts(self):
-		self.contexts = {}
-		for neighbour in self.get_neighbours():
-			if (hasattr(neighbour, 'contexts') and len(neighbour.contexts) > 0):
-				neighbour.clear_contexts()
-
-	"""
-	def generate_left_right_index(self, left_contexts, right_contexts):
-		self.visited = True
-
-		my_left = []
-		my_right = []
-
-		for incoming in self.incoming:
-			incoming.src.build_left_index('', my_left)
-		for neighbour in self.neighbours:
-			neighbour.dest.build_right_index('', my_right)
-		for context in my_left:
-			left_contexts[context + str(self.index)] = {'context': context, 'index': self.index}
-		for context in my_right:
-			right_contexts[context + str(self.index)] = {'context': context, 'index': self.index}
-
-		for neighbour in self.neighbours:
-			if not (hasattr(neighbour.dest, 'visited') and neighbour.dest.visited):
-				neighbour.dest.generate_left_right_index(left_contexts, right_contexts)
-
-	def build_left_index(self, str, contexts):
-		if (self.index == HEAD_INDEX):
-			if (len(str) > 0):
-				contexts.append(str + END_SYMBOL)
-		else:
-			for incoming in self.incoming:
-				incoming.src.build_left_index(str + self.value, contexts)
-
-	def build_right_index(self, str, contexts):
-		if (self.index == TAIL_INDEX):
-			contexts.append(str + END_SYMBOL)
-		else:
-			for neighbour in self.neighbours:
-				neighbour.dest.build_right_index(str + self.value, contexts)
-	"""
 class Edge:
 	def __init__(self, src, dest, path):
 		self.src = src
@@ -553,4 +578,5 @@ def merge_colours(colours):
 	g = int(g / len(colours)) << 8
 	b = int(b / len(colours))
 
-	return hex(r + g + b)
+	#return hex(r + g + b)
+	return str(0x7CFC00)

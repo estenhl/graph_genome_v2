@@ -11,4 +11,4 @@ SCORING_MATRIX = {'A': {'A': 4, 'C': 0, 'G': 0, 'T': 0},
 	'T': {'A': 0, 'C': 0, 'G': 0, 'T': 4},
 	HEAD_VALUE: {'A': 0, 'C': 0, 'G': 0, 'T': 0},
 	TAIL_VALUE: {'A': 0, 'C': 0, 'G': 0, 'T': 0}}
-SCORING_MULTIPLIER = 0.5 # Multiplier for equal base scores
+CORRECT_MAPPING_SCORE = 1

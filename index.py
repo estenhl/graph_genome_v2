@@ -74,7 +74,6 @@ def generate_left_right_index(graph):
 	prune_duplicates(sorted_left)
 	prune_duplicates(sorted_right)
 	minimized_left = minimize_context_index(sorted_left)
-	print('left: ' + str(sorted_left))
 	minimized_right = minimize_context_index(sorted_right)
 
 	index = LeftRightIndex()

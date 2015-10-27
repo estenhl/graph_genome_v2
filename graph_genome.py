@@ -4,7 +4,7 @@ from utils import *
 from index import *
 import sys
 
-valid_commands = ['build', 'quit', 'help', 'add-variant', 'dot', 'print', 'add-global-alignment', 'add-global-alignments', 'critical', 'most-probable', 'analyze', 'index', 'map']
+valid_commands = ['build', 'quit', 'help', 'add-variant', 'dot', 'print', 'add-global-alignment', 'add-global-alignments', 'critical', 'most-probable', 'analyze', 'index', 'map', 'load-test', 'load-hla', 'regions']
 valid_flags = ['--fasta', '--vcf', '--lr', '--save', '--load']
 
 def parse_command(args):
@@ -47,6 +47,52 @@ def handle_build(graph, index, params, flags):
 	else:
 		print('Not implemented, use "build --fasta <filename>"')
 
+def handle_load_test(graph, index, params, flags):
+	graph = parse_reference_genome('data/test.fasta')
+
+	parse_VCF_variants(graph, 'data/test.vcf')
+
+	name, alignment1, alignment2 = parse_global_alignment('data/alignment.txt')
+	alignment = generate_graph_from_alignment(alignment2, name, graph)
+	graph.insert_global_alignment(alignment1, alignment, name)
+
+	index = generate_left_right_index(graph)
+
+	return graph, index
+
+def handle_load_hla(graph, index, params, flags):
+	graph = parse_reference_genome('data/hla_b27/sequences/ref.fasta')
+	
+	name, alignment1, alignment2 = parse_global_alignment('data/hla_b27/alignments/ref-01.alignment')
+	alignment = generate_graph_from_alignment(alignment2, name, graph)
+	graph.insert_global_alignment(alignment1, alignment, name)
+
+	name, alignment1, alignment2 = parse_global_alignment('data/hla_b27/alignments/ref-02.alignment')
+	alignment = generate_graph_from_alignment(alignment2, name, graph)
+	graph.insert_global_alignment(alignment1, alignment, name)
+
+	name, alignment1, alignment2 = parse_global_alignment('data/hla_b27/alignments/ref-03.alignment')
+	alignment = generate_graph_from_alignment(alignment2, name, graph)
+	graph.insert_global_alignment(alignment1, alignment, name)
+
+	name, alignment1, alignment2 = parse_global_alignment('data/hla_b27/alignments/ref-04.alignment')
+	alignment = generate_graph_from_alignment(alignment2, name, graph)
+	graph.insert_global_alignment(alignment1, alignment, name)
+
+	name, alignment1, alignment2 = parse_global_alignment('data/hla_b27/alignments/ref-06.alignment')
+	alignment = generate_graph_from_alignment(alignment2, name, graph)
+	graph.insert_global_alignment(alignment1, alignment, name)
+
+	name, alignment1, alignment2 = parse_global_alignment('data/hla_b27/alignments/ref-09.alignment')
+	alignment = generate_graph_from_alignment(alignment2, name, graph)
+	graph.insert_global_alignment(alignment1, alignment, name)
+
+	name, alignment1, alignment2 = parse_global_alignment('data/hla_b27/alignments/ref-hs.alignment')
+	alignment = generate_graph_from_alignment(alignment2, name, graph)
+	graph.insert_global_alignment(alignment1, alignment, name)
+
+	return graph, index
+
 def handle_quit(graph, index, params, flags):
 	print('Shutting down')
 	exit()
@@ -78,6 +124,9 @@ def handle_add_variant(graph, index, params, flags):
 				print('Reading variants from vcf file ' + params[0])
 				parse_VCF_variants(graph, params[0])
 				print('Variants added')
+				neighbours = graph.get_node_by_index(5).neighbours
+				for neighbour in neighbours:
+					print(neighbour.paths)
 			except FileNotFoundError:
 				print(params[0] + ' is not a file')
 		else:
@@ -202,7 +251,7 @@ def handle_analyze(graph, index, params, flags):
 def handle_index(graph, index, params, flags):
 	if not graph:
 		print('Needs to build a graph first. See "help"')
-		return None
+		return
 
 	if ('--lr' in flags):
 		if (len(flags) == 1):
@@ -240,11 +289,25 @@ def handle_map(graph, index, params, flags):
 		print('Not implemented yet, use "map <sequence>"')
 	elif (len(params) == 1):
 		mappings = index.map_sequence(params[0])
-		#mappings = scale_mapping(graph, mappings, params[0])
+		mappings = find_critical(graph, mappings, params[0])
+		distinct_mappings = find_distinct(mappings)
+		print('Mapping: ')
 		for mapping in mappings:
 			print(mapping)
+		print('Distinct: ')
+		for distinct in distinct_mappings:
+			print(distinct)
 	else:
 		print('"map" takes exactly one argument, a sequence to be mapped')
+
+def handle_regions(graph, index, params, flags):
+	if not graph:
+		print('Needs to build a graph first. See "help"')
+		return
+
+	regions = graph.get_regions()
+	print(str(regions))
+
 
 def command_loop():
 	cmd = True
@@ -259,6 +322,10 @@ def command_loop():
 
 		if (cmd == 'build'):
 			graph = handle_build(graph, index, params, flags)
+		elif (cmd == 'load-test'):
+			graph, index = handle_load_test(graph, index, params, flags)
+		elif (cmd == 'load-hla'):
+			graph, index = handle_load_hla(graph, index, params, flags)
 		elif (cmd == 'quit'):
 			handle_quit(graph, index, params, flags)
 		elif not graph:
@@ -285,6 +352,8 @@ def command_loop():
 			index = handle_index(graph, index, params, flags)
 		elif (cmd == 'map'):
 			handle_map(graph, index, params, flags)
+		elif (cmd == 'regions'):
+			handle_regions(graph, index, params, flags)
 
 
 if __name__ == '__main__':

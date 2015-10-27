@@ -25,14 +25,31 @@ def generate_graph_from_alignment(alignment, name, graph):
 
 	return path
 
-def scale_mapping(graph, mappings, sequence):
-	scaled_mappings = []
-	for i in range(0, len(sequence)):
-		temp = []
-		for (index, score) in mappings[i]:
-			node = graph.get_node_by_index(index)
-			mapping_score =  SCORING_MATRIX[node.value][sequence[i]]
-			temp.append({'ref': node.value, 'seq': sequence[i], 'index': index, 'score': score + mapping_score * SCORING_MULTIPLIER})
-		scaled_mappings.append(sorted(temp, key=lambda k: k['score'], reverse=True))
+def find_critical(graph, mappings, sequence):
+	detailed_mappings = []
+	for i in range(0, len(mappings)):
+		detailed_mappings.append([])
+		for mapping in mappings[i]:
+			score = mapping[1]
+			index = mapping[0]
+			if (graph.get_node_by_index(index).value == sequence[i]):
+				score = score + CORRECT_MAPPING_SCORE
+			critical = False
+			if (graph.is_critical(index)):
+				critical = True
+			detailed_mappings[i].append({'index': index, 'score': score, 'critical': critical})
 
-	return scaled_mappings
+	return detailed_mappings
+
+def find_distinct(mappings):
+	print(str(mappings))
+	distinct_mappings = []
+	for i in range(0, len(mappings)):
+		if (len(mappings[i]) == 1 and mappings[i][0]['critical']):
+			distinct_mappings.append(mappings[i][0])
+		else:
+			distinct_mappings.append(None)
+
+	return distinct_mappings
+
+

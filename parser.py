@@ -31,7 +31,8 @@ def parse_FASTA_lines(graph, lines):
 		for character in line:
 			if character != '\n':
 				next = Node(character, index)
-				curr.add_neighbour(Node(character, index))
+				graph.add_node(next)
+				curr.add_neighbour(next, REFERENCE_PATH_INDEX)
 				index += 1
 				curr = curr.get_neighbour_by_index(0)
 	curr.add_neighbour(graph.tail, REFERENCE_PATH_INDEX)
@@ -128,11 +129,9 @@ def parse_global_alignment(filename):
 	for pair in pairs:
 		alignment1 += pair[0]
 		if not pair[1]:
-			print("NO PAIR")
 			for i in range(0, len(pair[0])):
 				alignment2 += '-'
 		elif len(pair[0]) > len(pair[1]):
-			print("SHITS LONGER YOU")
 			if start:
 				for i in range(0, len(pair[0]) - len(pair[1])):
 					alignment2 += '-'
@@ -143,7 +142,6 @@ def parse_global_alignment(filename):
 				for i in range(0, len(pair[0]) - len(pair[1])):
 					alignment2 += '-'
 		else:
-			print("NADA")
 			alignment2 += pair[1]
 			start = False
 

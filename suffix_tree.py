@@ -1,5 +1,4 @@
-MAX_ERRORS = 1
-LENGTH_MULTIPLIER = 0.5
+from params import *
 
 class SuffixTree:
 	def __init__(self):
@@ -28,20 +27,20 @@ class SuffixTreeNode:
 		self.indexes = []
 		self.children = {}
 
-	def recursive_search(self, s, path, errors, depth):
+	def recursive_search(self, s, path, errors, depth, max_errors=MAX_ERRORS, error_multiplier=ERROR_MULTIPLIER, length_multiplier=LENGTH_MULTIPLIER):
 		if (errors > MAX_ERRORS):
 			return {}
 		elif (len(self.indexes) > 0):
 			matches = {}
 			for index in self.indexes:
-				matches[index] = MAX_ERRORS - errors + depth * LENGTH_MULTIPLIER
+				matches[index] = (MAX_ERRORS - errors) * error_multiplier + depth * length_multiplier
 
 			return matches
 		elif (len(s) == 0):
 			matches = {}
 			if (len(self.indexes) > 0):
 				for index in self.indexes:
-					matches[index] = MAX_ERRORS - errors + depth * LENGTH_MULTIPLIER
+					matches[index] = MAX_ERRORS - errors + depth * length_multiplier
 
 			for child in self.children:
 				for (index, score) in self.children[child].recursive_search('', path, errors, depth).items():
