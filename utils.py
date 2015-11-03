@@ -1,5 +1,5 @@
 from graph import *
-from params import *
+from constants import *
 
 def path_to_str(path):
 	s = ""
@@ -35,7 +35,7 @@ def find_critical(graph, mappings, sequence):
 			if (graph.get_node_by_index(index).value == sequence[i]):
 				score = score + CORRECT_MAPPING_SCORE
 			critical = False
-			if (graph.is_critical(index)):
+			if (graph.is_index_critical(index)):
 				critical = True
 			detailed_mappings[i].append({'index': index, 'score': score, 'critical': critical})
 
@@ -51,5 +51,26 @@ def find_distinct(mappings):
 			distinct_mappings.append(None)
 
 	return distinct_mappings
+
+def expand_mappings(graph, mappings, sequence):
+	detailed_mappings = []
+	for i in range(0, len(mappings)):
+		temp = []
+		for mapping in mappings[i]:
+			score = mapping[1]
+			index = mapping[0]
+			distinct = False
+			if (sequence[i] == graph.get_node_by_index(index).value):
+				score += CORRECT_BASE_SCORE
+			if (len(mappings[i]) == 1 and graph.is_index_critical(index)):
+				distinct = True
+			temp.append({'index': index, 'score': score, 'distinct': distinct})
+		detailed_mappings.append(sorted(temp, key=lambda k: k['score'], reverse=True))
+
+	return detailed_mappings
+
+
+
+
 
 

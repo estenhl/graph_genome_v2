@@ -1,6 +1,6 @@
 from graph import *
 from suffix_tree import *
-from params import *
+from constants import *
 from utils import *
 
 class LeftRightIndex:

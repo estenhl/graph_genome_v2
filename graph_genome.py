@@ -1,8 +1,9 @@
+import sys
+
 from parser import *
 from graph import *
 from utils import *
 from index import *
-import sys
 
 valid_commands = ['build', 'quit', 'help', 'add-variant', 'dot', 'print', 'add-global-alignment', 'add-global-alignments', 'critical', 'most-probable', 'analyze', 'index', 'map', 'load-test', 'load-hla', 'regions']
 valid_flags = ['--fasta', '--vcf', '--lr', '--save', '--load']
@@ -62,10 +63,6 @@ def handle_load_test(graph, index, params, flags):
 
 def handle_load_hla(graph, index, params, flags):
 	graph = parse_reference_genome('data/hla_b27/sequences/ref.fasta')
-	
-	name, alignment1, alignment2 = parse_global_alignment('data/hla_b27/alignments/ref-01.alignment')
-	alignment = generate_graph_from_alignment(alignment2, name, graph)
-	graph.insert_global_alignment(alignment1, alignment, name)
 
 	name, alignment1, alignment2 = parse_global_alignment('data/hla_b27/alignments/ref-02.alignment')
 	alignment = generate_graph_from_alignment(alignment2, name, graph)
@@ -84,10 +81,6 @@ def handle_load_hla(graph, index, params, flags):
 	graph.insert_global_alignment(alignment1, alignment, name)
 
 	name, alignment1, alignment2 = parse_global_alignment('data/hla_b27/alignments/ref-09.alignment')
-	alignment = generate_graph_from_alignment(alignment2, name, graph)
-	graph.insert_global_alignment(alignment1, alignment, name)
-
-	name, alignment1, alignment2 = parse_global_alignment('data/hla_b27/alignments/ref-hs.alignment')
 	alignment = generate_graph_from_alignment(alignment2, name, graph)
 	graph.insert_global_alignment(alignment1, alignment, name)
 
@@ -288,14 +281,10 @@ def handle_map(graph, index, params, flags):
 	if ('--fasta' in flags):
 		print('Not implemented yet, use "map <sequence>"')
 	elif (len(params) == 1):
-		mappings = index.map_sequence(params[0])
-		mappings = find_critical(graph, mappings, params[0])
-		distinct_mappings = find_distinct(mappings)
-		print('Mapping: ')
-		for mapping in mappings:
-			print(mapping)
-		print('Distinct: ')
-		for distinct in distinct_mappings:
+		sequence = params[0]
+		mappings = index.map_sequence(sequence)
+		expanded_mappings = expand_mappings(graph, mappings, sequence)
+		for distinct in expanded_mappings:
 			print(distinct)
 	else:
 		print('"map" takes exactly one argument, a sequence to be mapped')

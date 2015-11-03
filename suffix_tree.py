@@ -1,4 +1,4 @@
-from params import *
+from constants import *
 
 class SuffixTree:
 	def __init__(self):

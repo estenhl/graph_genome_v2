@@ -1,5 +1,6 @@
-from constants import *
 from random import *
+
+from constants import *
 from region import *
 
 class Graph:
@@ -19,11 +20,14 @@ class Graph:
 		del self.nodes[-1]
 		if (node.index != len(self.nodes)):
 			node.index = len(self.nodes)
+		if (node.index == 1122):
+			print('ADDED NODE 1122')
 		self.nodes.append(node)
 		self.nodes.append(self.tail)
 		self.current_index += 1
 
 	def get_node_by_index(self, index):
+		print('Getting node with index ' + str(index))
 		if (index == float('inf')):
 			return self.tail
 
@@ -480,11 +484,12 @@ class Node:
 
 			l = []
 			for key in self.contexts:
-				if (direction == 'left'):
-					l.append(self.value + self.contexts[key]['context'])
-				else:
-					l.append(self.value + self.contexts[key]['context'])
-				contexts.append(self.contexts[key])
+				context = self.contexts[key]
+				if (len(context['context']) > MAX_SUFFIX_LENGTH):
+					context['context'] = context['context'][0:MAX_SUFFIX_LENGTH]
+
+				l.append(self.value + context['context'])
+				contexts.append(context)
 
 			return l
 
