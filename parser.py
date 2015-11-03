@@ -125,7 +125,6 @@ def parse_global_alignment(filename):
 	alignment1 = ''
 	alignment2 = ''
 	start = True
-	print('Pairs:' + str(pairs))
 	for pair in pairs:
 		alignment1 += pair[0]
 		if not pair[1]:

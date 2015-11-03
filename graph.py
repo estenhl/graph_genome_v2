@@ -20,18 +20,18 @@ class Graph:
 		del self.nodes[-1]
 		if (node.index != len(self.nodes)):
 			node.index = len(self.nodes)
-		if (node.index == 1122):
-			print('ADDED NODE 1122')
 		self.nodes.append(node)
 		self.nodes.append(self.tail)
 		self.current_index += 1
 
 	def get_node_by_index(self, index):
-		print('Getting node with index ' + str(index))
 		if (index == float('inf')):
 			return self.tail
 
-		return self.nodes[index]
+		if (index < len(self.nodes)):
+			return self.nodes[index]
+
+		return False
 
 	def get_reference_genome_representation(self):
 		reference = self.get_reference_genome()
@@ -93,7 +93,6 @@ class Graph:
 		self.add_path(next, TAIL_INDEX, REFERENCE_PATH_INDEX, path)
 
 	def add_deletion(self, length, index, path):
-		print('Length of deletion: ' + str(length))
 		if not path in self.paths:
 			self.paths.append(path)
 
@@ -174,6 +173,7 @@ class Graph:
 
 	def insert_global_alignment(self, alignment, new_path, name):
 		path = self.get_path_from_alignment(alignment)
+		exitable = False #TODO: REMOVE
 
 		if (len(path) != len(new_path)):
 			print('Can only align global alignments of equal length')
@@ -193,14 +193,11 @@ class Graph:
 		new_prev = self.head
 		for i in range(0, len(path)):
 			if not path[i]:
-				print('Gap in path')
 				new_prev = new_path[i]
 				self.add_node(new_path[i])
 			elif not new_path[i]:
-				print('Gap in new_path')
 				prev = path[i]
 			elif (path[i].value == new_path[i].value):
-				print('Merging ' + path[i].value)
 				if (prev == new_prev):
 					edge = prev.get_edge(path[i])
 					for incoming in new_path[i].incoming:
@@ -213,14 +210,18 @@ class Graph:
 					old_edge = new_prev.get_edge(new_path[i])
 					if (old_edge):
 						new_prev.neighbours.remove(old_edge)
+
+				for neighbour in new_path[i].neighbours:
+					for j in range(0, len(neighbour.dest.incoming)):
+						if (neighbour.dest.incoming[j].src.index == new_path[i].index):
+							neighbour.dest.incoming[j].src = path[i]
+
 				for neighbour in new_path[i].neighbours:
 					path[i].neighbours.append(neighbour)
 					neighbour.dest.incoming.append(neighbour)
 
 				new_prev = prev = path[i]
-				continue
 			else:
-				print('SNP: ' + path[i].value + '/' + new_path[i].value)
 				self.add_node(new_path[i])
 				new_prev = new_path[i]
 				prev = path[i]
@@ -268,12 +269,9 @@ class Graph:
 		printer.write(filename)
 
 	def is_critical(self, node):
-		print('Self: ' + str(self.paths))
-
 		size = 0
 		for neighbour in node.neighbours:
 			size += len(neighbour.paths)
-			print(str(neighbour.paths))
 
 		return size == len(self.paths)
 
@@ -285,8 +283,6 @@ class Graph:
 		for i in range(0, len(self.nodes)):
 			if (self.is_critical(self.get_node_by_index(i))):
 				critical.append(i)
-
-		print(critical)
 
 		return sorted(self.head.find_critical(len(self.paths), critical))
 
@@ -364,19 +360,9 @@ class Graph:
 				return curr
 			end = False
 			for neighbour in curr.get_neighbours():
-				if not (hasattr(neighbour, 'visited')):
-					print('NO VISITED')
-					print(neighbour.index)
-					print(neighbour)
-					print(neighbour.value)
-					print(self.get_node_by_index(neighbour.index).index)
-					exit()
 				temp = False
 				if not neighbour.visited:
 					temp = self.get_regions_rec(neighbour, region, critical, False)
-				if end and temp and end.index != temp.index:
-					print('Found two different end nodes!')
-					print(str(end.index) + ' and ' + str(temp.index))
 				elif temp:
 					end = temp
 			return end

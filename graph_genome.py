@@ -84,6 +84,8 @@ def handle_load_hla(graph, index, params, flags):
 	alignment = generate_graph_from_alignment(alignment2, name, graph)
 	graph.insert_global_alignment(alignment1, alignment, name)
 
+	index = generate_left_right_index(graph)
+
 	return graph, index
 
 def handle_quit(graph, index, params, flags):

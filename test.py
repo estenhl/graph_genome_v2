@@ -1,7 +1,10 @@
+import sys
+
 from suffix_tree import *
 from graph import *
 from parser import *
 from utils import *
+from index import *
 
 def suffix_tree_test():
 	tree = SuffixTree()
@@ -33,6 +36,21 @@ def graph_test():
 
 	return graph
 
+def alignment():
+	sys.setrecursionlimit(10000)
+	graph = parse_reference_genome('data/hla_b27/sequences/ref.fasta')
+
+	name, alignment1, alignment2 = parse_global_alignment('data/hla_b27/alignments/ref-01.alignment')
+	alignment = generate_graph_from_alignment(alignment2, name, graph)
+	graph.insert_global_alignment(alignment1, alignment, name)
+
+	for i in range(1, len(graph.nodes) - 1):
+		print('Got ' + str(graph.get_node_by_index(i).index) + ' on ' + str(i))
+		assert i == graph.get_node_by_index(i).index
+
+	index = generate_left_right_index(graph)
+	mappings = index.map_sequence('ACGGACGGAGAACCGAGA')
+
 def critical_test(graph):
 	assert False == graph.is_index_critical(7)
 	assert True == graph.is_index_critical(12)
@@ -40,6 +58,7 @@ def critical_test(graph):
 	assert True == graph.is_index_critical(16)
 
 if __name__ == '__main__':
-	tree = suffix_tree_test()
+	#tree = suffix_tree_test()
 	graph = graph_test()
-	critical_test(graph)
+	#critical_test(graph)
+	alignment()
